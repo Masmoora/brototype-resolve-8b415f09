@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,14 +7,35 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { user, profile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user && profile && profile.status === "approved") {
+      switch (profile.role) {
+        case "admin":
+          navigate("/admin/dashboard", { replace: true });
+          break;
+        case "staff":
+          navigate("/staff/dashboard", { replace: true });
+          break;
+        case "student":
+          navigate("/student/dashboard", { replace: true });
+          break;
+        default:
+          navigate("/", { replace: true });
+      }
+    }
+  }, [user, profile, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,20 +67,22 @@ export default function Login() {
 
         toast.success("Login successful!");
 
-        // Redirect based on role
-        switch (profile.role) {
-          case "admin":
-            navigate("/admin/dashboard");
-            break;
-          case "staff":
-            navigate("/staff/dashboard");
-            break;
-          case "student":
-            navigate("/student/dashboard");
-            break;
-          default:
-            navigate("/");
-        }
+        // Wait a moment for auth state to update, then redirect
+        setTimeout(() => {
+          switch (profile.role) {
+            case "admin":
+              navigate("/admin/dashboard", { replace: true });
+              break;
+            case "staff":
+              navigate("/staff/dashboard", { replace: true });
+              break;
+            case "student":
+              navigate("/student/dashboard", { replace: true });
+              break;
+            default:
+              navigate("/", { replace: true });
+          }
+        }, 100);
       }
     } catch (error: any) {
       toast.error(error.message || "Login failed. Please try again.");
