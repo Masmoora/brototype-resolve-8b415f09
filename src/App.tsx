@@ -16,6 +16,7 @@ import Signup from "./pages/auth/Signup";
 import Pending from "./pages/auth/Pending";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import PendingUsers from "./pages/admin/PendingUsers";
+import CreateAdminAccount from "./pages/admin/CreateAdminAccount";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import StaffDashboard from "./pages/staff/StaffDashboard";
 import NotFound from "./pages/NotFound";
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/signup" element={<Signup />} />
             <Route path="/auth/pending" element={<Pending />} />
+            <Route path="/create-admin" element={<CreateAdminAccount />} />
 
             {/* Admin Routes */}
             <Route path="/admin/*" element={
